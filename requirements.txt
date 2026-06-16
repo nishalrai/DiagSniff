@@ -1,0 +1,6 @@
+typer[all]>=0.12
+rich>=13.7
+paramiko>=3.4
+keyring>=24
+pydantic>=2.6
+cryptography>=42
