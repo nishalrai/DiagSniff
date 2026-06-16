@@ -2,6 +2,7 @@
 
 **SSH-based packet capture CLI for FortiGate and FortiWeb — cross-platform, production-structured.**
 
+<br>
 
 ![diagsniff prompt](img/diagsniffprompt.png)
 
@@ -24,42 +25,37 @@ diagsniff capture --profile prod-fg --iface port1 --interactive --tls
 # Dependency + tool check
 diagsniff check
 
-# ── Connectivity check (port 22 assumed; --auth optional)
+# Connectivity check (port 22 assumed; --auth optional)
 diagsniff check 192.168.1.1 --auth admin:password
 diagsniff check 192.168.1.1:22 --auth admin:password
 
-# ── Test a saved profile
+# Test a saved profile
 diagsniff profile check prod-fg
 
-# ── Interactive capture (Ctrl+C to stop)
-diagsniff capture --profile prod-fg --iface port1 \
-    --filter "host 192.168.190.96" --interactive
+# Interactive capture (Ctrl+C to stop)
+diagsniff capture --profile prod-fg --iface port1 --filter "host 192.168.190.96" --interactive
 
-# ── Interactive capture with TLS key extraction (standard mode)
-diagsniff capture --profile prod-fg --iface port1 \
-    --filter "host 192.168.190.96" --interactive --tls
+# Interactive capture with TLS key extraction (standard mode)
+diagsniff capture --profile prod-fg --iface port1 --filter "host 192.168.190.96" --interactive --tls
 
 # Interactive capture with TLS key extraction (strict filtered mode)
-diagsniff capture --profile prod-fg --iface port1 \
-    --filter "host 192.168.190.96" --interactive --tls-strict
+diagsniff capture --profile prod-fg --iface port1 --filter "host 192.168.190.96" --interactive --tls-strict
 
-# ── Bounded capture, 200 packets 
+# Bounded capture, 200 packets 
 diagsniff capture --profile prod-fg --iface port1 --count 200
 
-# ── Capture on a device with a pre-login consent banner 
-
+# Capture on a device with a pre-login consent banner 
 # Some FortiGate / FortiWeb deployments with login banner to press keys to continue before the CLI is available. --accept-banner handles this automatically over the shell session.
+
 diagsniff capture --profile prod-fw --iface any --interactive --accept-banner
 
 
 # ── All captures saved as: 
 # pcap/yyyyMMdd-HHmmssSSS.pcap                ← Wireshark-compatible binary
-
 # pcap/yyyyMMdd-HHmmssSSSSesionKey.log        ← TLS session key log (only with --tls)
-
 # pcap/yyyyMMdd-HHmmssSSS.txt                 ← raw text (auto-deleted after conversion)
+# ── Offline TXT → PCAP conversion
 
-# ── Offline TXT → PCAP conversion ────────────────────────────────────────────
 diagsniff convert --file ./capture.txt
 diagsniff convert --file ./capture.txt --output ./pcap/session1.pcap
 ```
@@ -225,8 +221,7 @@ diagsniff capture --profile prod-fg --iface any --filter "tcp port 443" --intera
 ### 4. Ad-hoc capture without a profile
 
 ```bash
-diagsniff capture --host 10.0.0.1 --user admin --device fortiweb \
-    --iface eth0 --filter "udp port 53" --count 50
+diagsniff capture --host 10.0.0.1 --user admin --device fortiweb --iface eth0 --filter "udp port 53" --count 50
 ```
 
 ---
@@ -425,7 +420,7 @@ On the **first connection** to a new host, you will see:
 
 ```
 ╭──────────────────── First-Time Connection ─────────────────────╮
-│ 🔑  New host key                                               │
+│   New host key                                               │
 │                                                                │
 │   Host     : 192.168.1.1:22                                    │
 │   Key type : ssh-ed25519                                       │
@@ -578,9 +573,10 @@ text2pcap -q -t "%d/%m/%Y %H:%M:%S." pcap/2026-04-19-143022.txt pcap/2026-04-19-
 
 ## TLS Debug (FortiWeb)
 
-> ⚠️ **This feature handles sensitive cryptographic key material.**
+> **This feature handles sensitive cryptographic key material.**
 > Only use it when you have explicit authorisation to decrypt the captured traffic.
 > Output files are created with permissions `0o600` (owner read-only).
+
 
 ```bash
 # Capture a FortiWeb TLS debug session first (normal capture command),
@@ -631,13 +627,7 @@ The NSS Key Log file is written **alongside the capture file** (`.keylog` suffix
 diagsniff capture -p prod-fw -i any -f "tcp port 443" -c 500 --tls-debug
 
 # Interactive + TLS debug + custom paths
-diagsniff capture -p prod-fw --interactive \
-    --tls-debug \
-    --tls-keylog /tmp/session.keylog \
-    --tls-level 255 \
-    --tls-save-raw \
-    --tls-raw-path /tmp/fw_debug.txt \
-    --tls-drain 5
+diagsniff capture -p prod-fw --interactive --tls-debug --tls-keylog /tmp/session.keylog --tls-level 255 --tls-save-raw --tls-raw-path /tmp/fw_debug.txt --tls-drain 5
 
 # Use in Wireshark
 # Edit → Preferences → Protocols → TLS → (Pre)-Master-Secret log filename
@@ -676,7 +666,7 @@ DiagSniff provides two TLS debug modes for different use cases:
 - PCAP file: `<stem>.pcap` (format: `yyyy-mm-dd-hh-mm-ss-ms.pcap`)
 - Raw TLS debug: Auto-deleted on successful extraction (kept only on failure)
 
-**⚠️ TLS 1.3 Backend Limitation:** To extract TLS 1.3 backend keys, leave ALL IP filters empty.
+** TLS 1.3 Backend Limitation:** To extract TLS 1.3 backend keys, leave ALL IP filters empty.
 
 ### Standalone TLS debug session (no sniffer)
 
@@ -777,7 +767,7 @@ awk '/EXPORTER_SECRET|SERVER_HANDSHAKE_TRAFFIC_SECRET|SERVER_TRAFFIC_SECRET_0|CL
     flow.log >> keys.log
 ```
 
-**⚠️ Critical TLS 1.3 Backend Limitation:**
+** Critical TLS 1.3 Backend Limitation:**
 
 > When TLS 1.3 is deployed on the **backend side** (FortiWeb → real server) and IP flow filters are added, pre-master secrets **cannot be printed**. You must remove all IP filters to retrieve TLS 1.3 backend secrets.
 
